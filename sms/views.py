@@ -100,3 +100,46 @@ def edit_trip(request, trip_id):
             return render(request, 'edit_trip.html', {'trip': trip})
             
     return render(request, 'edit_trip.html', {'trip': trip})
+
+def create_request(request):
+    if request.method == 'POST':
+        start_location = request.POST.get('start_location', '')
+        end_location = request.POST.get('end_location', '')
+        date = request.POST.get('date', '')
+        message = request.POST.get('message', '')
+        
+        if not all([start_location, end_location, date, message]):
+            messages.error(request, 'All fields are required')
+            return render(request, 'create_request.html')
+            
+        try:
+            date = timezone.make_aware(timezone.datetime.strptime(date, '%Y-%m-%dT%H:%M'))
+            
+            new_request = Request(
+                user=None,
+                start_location=start_location,
+                end_location=end_location,
+                date=date,
+                message=message
+            )
+            new_request.save()
+            messages.success(request, 'Request created successfully')
+            return redirect('home')
+        except:
+            messages.error(request, 'Error creating request')
+            return render(request, 'create_request.html')
+        
+    return render(request, 'create_request.html')
+
+def my_requests(request):
+    requests = Request.objects.all().order_by('-created_at')
+    return render(request, 'my_requests.html', {'requests': requests})
+
+def delete_request(request, request_id):
+    request_obj = get_object_or_404(Request, id=request_id)
+    try:
+        request_obj.delete()
+        messages.success(request, 'Request deleted successfully')
+    except:
+        messages.error(request, 'Error deleting request')
+    return redirect('my_requests')
