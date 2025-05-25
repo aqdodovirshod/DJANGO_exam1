@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block title %}Home - Hamsafar{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mb-4">Available Trips</h1>
+
+    <div class="row">
+        <div class="col-md-8">
+            {% if trips %}
+            {% for trip in trips %}
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">{{ trip.start_location }} to {{ trip.end_location }}</h5>
+                    <p class="card-text">
+                        <strong>Date:</strong> {{ trip.date|date:"F d, Y - H:i" }}<br>
+                        <strong>Available Seats:</strong> {{ trip.seats }}<br>
+                        <strong>Description:</strong> {{ trip.description }}
+                    </p>
+                    <div class="btn-group">
+                        <a href="{% url 'edit_trip' trip.id %}" class="btn btn-outline-primary">Edit</a>
+                        <a href="{% url 'delete_trip' trip.id %}" class="btn btn-outline-danger"
+                            onclick="return confirm('Are you sure you want to delete this trip?')">Delete</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            {% else %}
+            <p class="alert alert-info">No trips available.</p>
+            {% endif %}
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">Quick Actions</h5>
+                    <div class="d-grid gap-3">
+                        <a href="{% url 'create_trip' %}" class="btn btn-success">
+                            <i class="bi bi-plus-circle"></i> Create New Trip
+                        </a>
+                        <a href="{% url 'create_request' %}" class="btn btn-warning text-white">
+                            <i class="bi bi-pencil-square"></i> Create Request
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
